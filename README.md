@@ -95,8 +95,8 @@ git clone -b grass_bridges git@github.com:GeraultTr/adel.git
 git clone -b publish_WB git@github.com:GeraultTr/soiltemp.git
 
 cd Grass-BRIDGES
-mamba -vvv create -n Grass-bridges -f ./conda/environment.yaml -y
-mamba activate Grass-bridges
+mamba -vvv create -f ./conda/environment.yaml -y
+mamba activate grass-bridges
 pip install -e .
 cd ..
 

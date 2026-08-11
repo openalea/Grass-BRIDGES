@@ -17,14 +17,14 @@ from openalea.fspm.utility.plot import analyze_data
 
 
 if __name__ == "__main__":
-    scenarios = ms.from_table(file_path="inputs/Scenarios_26-08-04.xlsx", which=["GB_CNW_1"])
-    custom_suffix = "vmaa_x10_vmNm_x5"
+    scenarios = ms.from_table(file_path="inputs/Scenarios_26-08-04.xlsx", which=["GB_1.0"])
+    custom_suffix = "vmNm_x100"
     output_folder = "/home/torisuten/Documents/outputs/wbr_outputs/test"
     time_step_in_seconds = 3600
     simulation_length_in_days = 20
     # n_iterations = int((simulation_length_in_days * 24 * 3600) / time_step_in_seconds) + 1
     n_iterations = 2500
-    densities = [1]
+    densities = [250]
     
     scene_xrange = 0.15
     scene_yrange = 0.15

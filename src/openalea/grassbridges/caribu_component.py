@@ -124,13 +124,13 @@ class LightModel:
         """
         Initialize the inputs of the model from the MTG shared
 
-        :param float energy: The incident PAR above the canopy (�mol m-2 s-1)
+        :param float energy: The incident PAR above the canopy (µmol m-2 s-1)
         :param string diffuse_model: The kind of diffuse model, either 'soc' or 'uoc'.
         :param int azimuts: The number of azimutal positions.
         :param int zenits: The number of zenital positions.
         :param int DOY: Day Of the Year to be used for solar sources
         :param int hourTU: Hour to be used for solar sources (Universal Time)
-        :param float latitude: latitude to be used for solar sources (�)
+        :param float latitude: latitude to be used for solar sources (°)
         :param bool heterogeneous_canopy: Whether to create a duplicated heterogeneous canopy from the initial mtg.
 
         :return: A tuple of Caribu scenes instantiated for sky and sun sources, respectively, and two dictionaries with Erel value per vertex id and per primitive.

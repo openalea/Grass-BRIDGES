@@ -12,6 +12,8 @@ RootAnatomy:
       distance_from_tip: 1.0
     length:
       length: 1.0
+    initial_length:
+      initial_length: 1.0
     radius:
       radius: 1.0
     root_hair_length:
@@ -164,6 +166,8 @@ RootWaterModel:
       xylem_volume: 1.0
     phloem_volume:
       phloem_volume: 1.0
+    growth_volume:
+      growth_volume: 1.0
     kr_symplasmic_water_xylem:
       kr_symplasmic_water_xylem: 1.0
     kr_apoplastic_water_xylem:
@@ -202,8 +206,8 @@ RootWaterModel:
       Cv_solutes_soil: 1.0
 
   CNW_Grass:
-    water_root_shoot_xylem:
-      water_outflux: 0.000001 / 3600 # g per time step to m3 per second
+    xylem_pressure_collar:
+      xylem_water_potential: 1000000 # MPa to Pa
 
 
 SoilModel:
@@ -278,8 +282,10 @@ CNW_Grass:
   RootGrowthModelCoupled: {}
 
   RootWaterModel:
-    xylem_water_potential_collar:
-      xylem_pressure_out: 0.000001 # Pa to MPa
+    root_xylem_water_potential:
+      xylem_pressure_in: 0.000001 # Pa to MPa
+    shoot_root_xylem_conductance:
+      K_xylem: 1000000000000 # m3.Pa-1.s-1 to g.MPa-1.s-1
 
   SoilModel: {}
 

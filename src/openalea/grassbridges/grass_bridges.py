@@ -72,7 +72,9 @@ class GrassBRIDGES(CompositeModel):
         self.root_water = RootWaterModel(self.g_root, time_step, **root_parameters)
         self.root_cn = RootCNUnified(self.g_root, time_step, **root_parameters)
         self.shoot = CNW_Grass(root_mtg=self.g_root, computing_light_interception=False, sowing_depth=-coordinates[2], **scenario_utility(time_step_in_seconds=time_step, INPUTS_DIRPATH="inputs", stored_times="all", 
-                                                    isolated_roots=True, cnwgrass_roots=False, single_plant=True, hydraulics=parameters["hydraulics"]["shoot"]["hydraulics"], 
+                                                    isolated_roots=True, cnwgrass_roots=False, single_plant=True,
+                                                    # explicit_tillers=True,
+                                                    hydraulics=parameters["hydraulics"]["shoot"]["hydraulics"],
                                                     update_parameters_all_models=parameters))
         self.g_shoot = self.shoot.g
 

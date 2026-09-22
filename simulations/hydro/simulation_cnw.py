@@ -18,7 +18,7 @@ from openalea.fspm.utility.plot import analyze_data
 
 if __name__ == "__main__":
     scenarios = ms.from_table(file_path="inputs/Scenarios_26-08-04.xlsx", which=["GB_1.0"])
-    custom_suffix = "vmNm_x100_fix_jumps"
+    custom_suffix = "osm_on_diff_Nm"
     output_folder = "/home/torisuten/Documents/outputs/wbr_outputs/test"
     time_step_in_seconds = 3600
     simulation_length_in_days = 20

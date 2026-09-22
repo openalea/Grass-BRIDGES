@@ -18,14 +18,14 @@ from openalea.fspm.utility.plot import analyze_data
 
 if __name__ == "__main__":
     scenarios = ms.from_table(file_path="inputs/Scenarios_26-08-04.xlsx", which=["GB_soil_1.0"])
-    custom_suffix = "3ds_vmNm_x100"
+    custom_suffix = "3ds_BC_switch_psi_ref_Gx0.11_f"
     output_folder = "/home/torisuten/Documents/outputs/wbr_outputs/test"
     time_step_in_seconds = 3600
     simulation_length_in_days = 20
     # n_iterations = int((simulation_length_in_days * 24 * 3600) / time_step_in_seconds) + 1
     n_iterations = 2500
-    densities = [250]
-    
+    densities = [1.]
+
     scene_xrange = 0.15
     scene_yrange = 0.15
     row_spacing = 0.15
@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
             full_scenario_name = f"{scenario_name}_{target_density}_{custom_suffix}"
 
-            clean_exit = play_Orchestra(scene_name=full_scenario_name, output_folder=output_folder, plant_models=[GrassBRIDGES], plant_scenarios=[scenario], 
+            clean_exit = play_Orchestra(scene_name=full_scenario_name, output_folder=output_folder, plant_models=[GrassBRIDGES], plant_scenarios=[scenario],
                                 soil_model=RhizoSoil, soil_scenario=scenario, light_model=LightModel,
                                 translator_path=os.path.join(openalea.grassbridges.__path__[0], 'cnw_coupling.yaml'),
                                 logger_class=Logger, log_settings=Logger.light_log, heavy_log_period=48,

@@ -75,6 +75,7 @@ class GrassBRIDGES(CompositeModel):
                                                     isolated_roots=True, cnwgrass_roots=False, single_plant=True,
                                                     # explicit_tillers=True,
                                                     hydraulics=parameters["hydraulics"]["shoot"]["hydraulics"],
+                                                    stomatal_model_name='hydraulics',
                                                     update_parameters_all_models=parameters))
         self.g_shoot = self.shoot.g
 

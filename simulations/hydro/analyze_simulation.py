@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # output_path = os.path.join("outputs", "parametrization")
 
     # for scenario_name in ["WB_defense1_1_dbg_bal_1.1"]:
-    for scenario_name in ["GB_soil_1.0_1.0_3ds_BC_switch_osm_psi_refd10"]:
+    for scenario_name in ["GB_soil_1.0_250_3ds_BC_switch_psi_ref_Gx0.11_wetness"]:
     # for scenario_name in ["WB_def_soil_1_250_3d_2.1"]:
 
         # subscenarios = [subsc for subsc in os.listdir(os.path.join(output_path, scenario_name)) if subsc not in ["Soil", "Soil *", "Delete_to_Stop"]]

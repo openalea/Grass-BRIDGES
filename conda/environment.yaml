@@ -2,7 +2,6 @@ name: grass-bridges
 channels:
   - openalea3
   - conda-forge
-channel_priority: strict
 dependencies:
   # Scientific
   - python
@@ -23,7 +22,6 @@ dependencies:
   
   # Openalea
   - openalea.mtg
-  - openalea.deploy
   - openalea.lpy
   - openalea.caribu
   - openalea.astk
@@ -35,10 +33,17 @@ dependencies:
   - imageio-ffmpeg
   - matplotlib
   - brokenaxes
-  - mesalib<25.1 # otherwise compatibility issues with mesalib
-  - "vtk>=9.3.1=*osmesa*"
+  - "vtk>=9.3.1=*osmesa*"   # [linux]
+  - mesalib<25.1            # [linux]
+  - vtk>=9.3.1              # [osx]
+  - vtk>=9.3.1              # [win]
   
   # For RhizoSoil cmf
-  # let pip install the rest using pyproject.toml (if you are okay with conda/pip mix)
   - pip:
-      - -e .."[doc]"
+      - cmf
+
+platforms:
+  - linux-64
+  - osx-64
+  - osx-arm64
+  - win-64

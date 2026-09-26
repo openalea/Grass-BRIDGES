@@ -95,7 +95,8 @@ git clone -b grass_bridges git@github.com:GeraultTr/adel.git
 git clone -b publish_WB git@github.com:GeraultTr/soiltemp.git
 
 cd Grass-BRIDGES
-mamba -vvv create -f ./conda/environment.yaml -y
+mamba install -c conda-forge conda-lock -y
+conda-lock install --mamba -n grass-bridges ./conda/environment-lock.yaml
 mamba activate grass-bridges
 pip install -e .
 cd ..
@@ -134,6 +135,12 @@ cd ..
 
 echo Installation finished
 ```
+
+If the solved environment file is too old rerun the following:
+```
+conda-lock -f ./conda/environment.yaml --mamba -p linux-64 --lockfile ./conda/environment-lock.yaml
+```
+Replace with your system the -p flag : win-64 | linux-64 | osx-64 | osx-arm64
 
 
 #### Requirements installed by Grass-BRIDGES # TODO: update

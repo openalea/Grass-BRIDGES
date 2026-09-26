@@ -17,7 +17,7 @@ requirements:
   build:
     - python {{PY_VER}}
     - setuptools
-    - openalea.deploy
+    # - openalea.deploy
   run:
     - python >=3.8
     # Model

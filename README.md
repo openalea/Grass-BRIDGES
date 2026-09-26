@@ -105,6 +105,10 @@ cd cnwgrass
 pip install -e .
 cd ..
 
+cd adel
+pip install -e .
+cd ..
+
 cd Root-CyNAPS
 pip install -e .
 cd ..

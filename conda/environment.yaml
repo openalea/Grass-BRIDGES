@@ -38,7 +38,7 @@ dependencies:
   - vtk>=9.3.1              # [osx]
   - vtk>=9.3.1              # [win]
   
-  # For RhizoSoil cmf
+  # For RhizoSoil cmf TODO: fails on mac
   - pip:
       - cmf
 

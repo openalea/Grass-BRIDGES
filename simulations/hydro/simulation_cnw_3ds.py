@@ -18,7 +18,7 @@ from openalea.fspm.utility.plot import analyze_data
 
 if __name__ == "__main__":
     scenarios = ms.from_table(file_path="inputs/Scenarios_26-08-04.xlsx", which=["GB_soil_1.0"])
-    custom_suffix = "3ds_BC_switch_Gx0.16_wetness"
+    custom_suffix = "3ds_all_pr_G0.13_vmNmx10"
     output_folder = "/home/torisuten/Documents/outputs/wbr_outputs/test"
     time_step_in_seconds = 3600
     simulation_length_in_days = 20
@@ -63,6 +63,7 @@ if __name__ == "__main__":
                 
                 analyze_data(scenarios=[full_scenario_name], outputs_dirpath=output_folder, target_folder_key=target_folder_key,
                                 inputs_dirpath="inputs",
+                                on_sums=True,
                                 on_soil_logs=True)
 
 

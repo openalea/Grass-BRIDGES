@@ -1,6 +1,7 @@
 import multiprocessing as mp
 import time
 import os
+import sys
 import pickle
 
 # Model packages
@@ -17,9 +18,16 @@ from openalea.fspm.utility.plot import analyze_data
 
 
 if __name__ == "__main__":
-    scenarios = ms.from_table(file_path="inputs/Scenarios_26-08-04.xlsx", which=["GB_soil_1.0"])
-    custom_suffix = "3ds_all_pr_G0.13_vmNmx10"
-    output_folder = "/home/torisuten/Documents/outputs/wbr_outputs/test"
+    # scenarios = ms.from_table(file_path="inputs/Scenarios_26-10-04.xlsx", which=[
+        # "GB_soil_1.0", 
+        # "GB_soil_1.0_no_rain", 
+        # "GB_soil_1.0_no_ferti", 
+        # "GB_soil_1.0_2_stress"
+        # ])
+    scenarios = ms.from_table(file_path="inputs/Scenarios_26-10-04.xlsx", which=["GB_soil_1.0"]) 
+    # Optional suffix from the command line: python simulation_cnw_3ds.py "<suffix>"
+    custom_suffix = sys.argv[1] if len(sys.argv) > 1 else "back_dbothx1&tillersW&xygateON&latnit+adjust&leafjumps&flipfix&B6&GAMMA&osm_adj&n2"
+    output_folder = "/home/torisuten/Documents/outputs/wbr_outputs/test/Growth_sink_to_tips"
     time_step_in_seconds = 3600
     simulation_length_in_days = 20
     # n_iterations = int((simulation_length_in_days * 24 * 3600) / time_step_in_seconds) + 1
@@ -27,43 +35,85 @@ if __name__ == "__main__":
     densities = [250]
 
     scene_xrange = 0.15
-    scene_yrange = 0.15
+    scene_yrange = 0.027
     row_spacing = 0.15
     sowing_depth = [0.025]
 
-    for target_density in densities:
-        for scenario_name, scenario in scenarios.items():
+    environment_models_number = 2
+    subprocesses_number = [int(max(scene_xrange * scene_yrange * density, 1)) + environment_models_number for density in densities]
+    parallel_development = 1 # To keep room in CPUs if launching dev simulations in parallel on the machine
+    max_processes = mp.cpu_count() - max(subprocesses_number) - parallel_development - 1 # -1 for the main process
 
-            full_scenario_name = f"{scenario_name}_{target_density}_{custom_suffix}"
+    parallel = False
+    processes = []
 
-            clean_exit = play_Orchestra(scene_name=full_scenario_name, output_folder=output_folder, plant_models=[GrassBRIDGES], plant_scenarios=[scenario],
-                                soil_model=RhizoSoil, soil_scenario=scenario, light_model=LightModel,
-                                translator_path=os.path.join(openalea.grassbridges.__path__[0], 'cnw_coupling.yaml'),
-                                logger_class=Logger, log_settings=Logger.light_log, heavy_log_period=48,
-                                scene_xrange=scene_xrange, scene_yrange=scene_yrange, sowing_density=target_density, row_spacing=row_spacing, sowing_depth=sowing_depth,
-                                time_step=time_step_in_seconds, n_iterations=n_iterations, record_performance=True, log_only_one=True)
-            
-            # In any situation, save the inputs in the output folder
-            with open(os.path.join(output_folder, full_scenario_name, "input_scenario.pckl"), "wb") as f:
-                pickle.dump(scenario, f)
+    if parallel:
+        finished_process = 0
+        for target_density in densities:
+            requiered_subprocesses = int(max(scene_xrange * scene_yrange * target_density, 1)) + environment_models_number
+            for scenario_name, scenario in scenarios.items():
+                # Main process creation part
+                while True:
+                    # Remove any finished processes and join them to release resources
+                    alive_processes = []
+                    for proc in processes:
+                        if proc.is_alive():
+                            alive_processes.append(proc)
+                        else:
+                            proc.join()
+                    processes = alive_processes
 
-            if clean_exit:
-                subscenarios = [subsc for subsc in os.listdir(os.path.join(output_folder, full_scenario_name)) if subsc not in ["Soil", "Delete_to_Stop", "input_scenario.pckl"]]
-                for subscenario in subscenarios:
-                    print("analysing", subscenario)
-                    analyze_data(scenarios=[full_scenario_name], outputs_dirpath=output_folder, target_folder_key=subscenario,
+                    if len(processes) < max_processes:
+                        break
+                    time.sleep(1)
+                full_scenario_name = f"{scenario_name}_{target_density}_{custom_suffix}"
+                print(f"Launching {full_scenario_name}...")
+
+                p = mp.Process(target=play_Orchestra, kwargs=dict(scene_name=full_scenario_name, output_folder=output_folder, plant_models=[GrassBRIDGES], plant_scenarios=[scenario],
+                                    soil_model=RhizoSoil, soil_scenario=scenario, light_model=LightModel,
+                                    translator_path=os.path.join(openalea.grassbridges.__path__[0], 'cnw_coupling.yaml'),
+                                    logger_class=Logger, log_settings=Logger.light_log, heavy_log_period=48,
+                                    scene_xrange=scene_xrange, scene_yrange=scene_yrange, sowing_density=target_density, row_spacing=row_spacing, sowing_depth=sowing_depth,
+                                    time_step=time_step_in_seconds, n_iterations=n_iterations, record_performance=True, log_only_one=True))
+
+                p.start()
+                processes.append(p)
+                
+    else:
+        for target_density in densities:
+            for scenario_name, scenario in scenarios.items():
+
+                full_scenario_name = f"{scenario_name}_{target_density}_{custom_suffix}"
+
+                clean_exit = play_Orchestra(scene_name=full_scenario_name, output_folder=output_folder, plant_models=[GrassBRIDGES], plant_scenarios=[scenario],
+                                    soil_model=RhizoSoil, soil_scenario=scenario, light_model=LightModel,
+                                    translator_path=os.path.join(openalea.grassbridges.__path__[0], 'cnw_coupling.yaml'),
+                                    logger_class=Logger, log_settings=Logger.heavy_log, heavy_log_period=48,
+                                    scene_xrange=scene_xrange, scene_yrange=scene_yrange, sowing_density=target_density, row_spacing=row_spacing, sowing_depth=sowing_depth,
+                                    time_step=time_step_in_seconds, n_iterations=n_iterations, record_performance=True, log_only_one=True)
+                
+                # In any situation, save the inputs in the output folder
+                with open(os.path.join(output_folder, full_scenario_name, "input_scenario.pckl"), "wb") as f:
+                    pickle.dump(scenario, f)
+
+                if clean_exit:
+                    subscenarios = [subsc for subsc in os.listdir(os.path.join(output_folder, full_scenario_name)) if subsc not in ["Soil", "Delete_to_Stop", "input_scenario.pckl"]]
+                    for subscenario in subscenarios:
+                        print("analysing", subscenario)
+                        analyze_data(scenarios=[full_scenario_name], outputs_dirpath=output_folder, target_folder_key=subscenario,
+                                        inputs_dirpath="inputs",
+                                        on_sums=True,
+                                        on_performance=True,
+                                        animate_raw_logs=False,
+                                        target_properties=None,
+                                        on_shoot_logs=True)
+                    
+                    target_folder_key = "Soil"
+                    
+                    analyze_data(scenarios=[full_scenario_name], outputs_dirpath=output_folder, target_folder_key=target_folder_key,
                                     inputs_dirpath="inputs",
                                     on_sums=True,
-                                    on_performance=True,
-                                    animate_raw_logs=False,
-                                    target_properties=None,
-                                    on_shoot_logs=True)
-                
-                target_folder_key = "Soil"
-                
-                analyze_data(scenarios=[full_scenario_name], outputs_dirpath=output_folder, target_folder_key=target_folder_key,
-                                inputs_dirpath="inputs",
-                                on_sums=True,
-                                on_soil_logs=True)
+                                    on_soil_logs=True)
 
-
+    for p in processes:
+        p.join()

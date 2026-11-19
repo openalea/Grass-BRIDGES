@@ -69,8 +69,17 @@ class GrassBRIDGES(CompositeModel):
         # We have to update the coordinates of the new / imported MTG for other model's initialization
         plot_mtg(self.g_root, position=self.coordinates, rotation=self.rotation)
         self.root_anatomy = RootAnatomy(self.g_root, time_step, **root_parameters)
-        self.root_water = RootWaterModel(self.g_root, time_step, **root_parameters)
-        self.root_cn = RootCNUnified(self.g_root, time_step, **root_parameters)
+        
+        self.n_sub_stepping = 1
+        sub_time_step = time_step / self.n_sub_stepping
+        # Root water and C/N equations use the sub-step...
+        self.root_water = RootWaterModel(self.g_root, sub_time_step, **root_parameters)
+        self.root_cn = RootCNUnified(self.g_root, sub_time_step, **root_parameters)
+        # ...but the scheduler must run them only once per call: the loop in run() does the sub-stepping,
+        # interleaving water and C/N (otherwise each call would already run n_sub_stepping increments)
+        Choregrapher().sub_time_step["RootWaterModel"] = time_step
+        Choregrapher().sub_time_step["RootCNUnified"] = time_step
+
         self.shoot = CNW_Grass(root_mtg=self.g_root, computing_light_interception=False, sowing_depth=-coordinates[2], **scenario_utility(time_step_in_seconds=time_step, INPUTS_DIRPATH="inputs", stored_times="all", 
                                                     isolated_roots=True, cnwgrass_roots=False, single_plant=True,
                                                     # explicit_tillers=True,
@@ -166,7 +175,7 @@ class GrassBRIDGES(CompositeModel):
         self.get_environment_boundaries()
         
         # Compute root growth from resulting states
-        self.root_growth(modules_to_update=[c for c in self.components if c.__class__.__name__ != "RootGrowthModelCoupled" and c.__class__.__name__ != "WheatFSPM"], soil_boundaries_to_infer=self.soil_outputs)
+        self.root_growth(modules_to_update=[c for c in self.components if c.__class__.__name__ not in ("RootGrowthModelCoupled", "CNW_Grass")], soil_boundaries_to_infer=self.soil_outputs)
         
         # Update MTG coordinates accounting for position in the scene
         plot_mtg(self.g_root, position=self.coordinates, rotation=self.rotation)
@@ -175,8 +184,7 @@ class GrassBRIDGES(CompositeModel):
         self.root_anatomy()
 
         # Compute state variations for water and then carbon and nitrogen
-        self.root_water()
-        self.root_cn()
+        for _ in range(self.n_sub_stepping): self.root_water(); self.root_cn()
 
         # print("inputs_to_shoot : ", self.root_props["total_sucrose_phloem"][1], self.root_props["total_living_struct_mass"][1], self.root_props["AA_root_to_shoot_xylem"][1], self.root_props["Nm_root_to_shoot_xylem"][1], self.root_props["total_cytokinins"][1])
 

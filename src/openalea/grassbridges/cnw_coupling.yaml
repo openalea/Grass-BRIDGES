@@ -72,6 +72,10 @@ RootCNUnified:
       thermal_time_since_emergence: 1.0
     amino_acids_consumption_by_growth:
       amino_acids_consumption_by_growth: 1.0
+    hexose_potential_demand_for_elongation:
+      hexose_potential_demand_for_elongation: 1.0
+    amino_acids_potential_demand_for_elongation:
+      amino_acids_potential_demand_for_elongation: 1.0
     vertex_index:
       vertex_index: 1.0
     total_living_struct_mass:
@@ -86,8 +90,6 @@ RootCNUnified:
       axial_export_water_up_xylem: 1.0
     axial_import_water_down_xylem:
       axial_import_water_down_xylem: 1.0
-    radial_import_water_phloem:
-      radial_import_water_phloem: 1.0
     axial_export_water_up_phloem:
       axial_export_water_up_phloem: 1.0
     axial_import_water_down_phloem:
@@ -96,8 +98,12 @@ RootCNUnified:
       xylem_water: 1.0
     phloem_water:
       phloem_water: 1.0
+    xylem_pressure_in:
+      xylem_pressure_in: 1.0
 
   SoilModel:
+    soil_water_pressure:
+      water_potential_soil: 1.0
     C_hexose_soil:
       C_hexose_soil: 1.0
     Cs_cells_soil:
@@ -137,9 +143,7 @@ RootGrowthModelCoupled:
     root_tissue_density:
       root_tissue_density: 1.0
 
-  RootCNUnified:
-    nitrate_transporters_affinity_factor:
-      nitrate_transporters_affinity_factor: 1.0
+  RootCNUnified: {}
 
   RootGrowthModelCoupled: {}
 
@@ -148,6 +152,8 @@ RootGrowthModelCoupled:
   SoilModel:
     soil_temperature:
       soil_temperature: 1.0
+    soil_Nm:
+      C_mineralN_soil: 1.0
 
   CNW_Grass:
     adventitious_to_emerge:
@@ -184,6 +190,10 @@ RootWaterModel:
       C_solutes_phloem: 1.0
     sucrose_root_to_shoot_phloem:
       sucrose_root_to_shoot_phloem: 1.0
+    Cv_phloem_sucrose_collar:
+      Cv_phloem_sucrose_collar: 1.0
+    Cv_phloem_solutes_collar:
+      Cv_phloem_solutes_collar: 1.0
 
   RootGrowthModelCoupled:
     length:
